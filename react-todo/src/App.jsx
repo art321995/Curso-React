@@ -1,22 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./assets/components/Header";
 import TodoComputed from "./assets/components/TodoComputed";
 import TodoCreate from "./assets/components/TodoCreate";
 import TodoFilter from "./assets/components/TodoFilter";
 import TodoList from "./assets/components/TodoList";
 
-const initialStateTodos =[
+/*const initialStateTodos =[
   { id:1, title: "Completed online JavaScript Curse",completed: true},
   { id:2, title: "Go to the gym",completed: false},
   { id:3, title: "10 minutos meditation",completed: false},
   { id:4, title: "Pick up grocerias",completed: false},
   { id:5, title: "Completed  todo app on FrontEnd Mentor",completed: false},
 
-]
+]**/
+
+const initialStateTodos = JSON.parse(localStorage.getItem("todos")) || []
 
 const App = () =>{
 
   const [todos, setTodos] =  useState(initialStateTodos);
+
+  useEffect(() =>{
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
   const createTodo = (title) =>{
     const newTodo = {
       id: Date.now(),
@@ -58,12 +65,13 @@ const App = () =>{
     } };
 
   return(
-    <div className="min-h-screen bg-gray-300 dark:bg-gray-900 bg-[url('./assets/images/bg-mobile-light.jpg')]  bg-contain bg-no-repeat
-    dark:bg-[url('./assets/images/bg-mobile-dark.jpg')] ">
+    <div className="min-h-screen bg-gray-300 dark:bg-gray-900 transition-all duration-1000 
+    bg-[url('./assets/images/bg-mobile-light.jpg')]  bg-contain bg-no-repeat dark:bg-[url('./assets/images/bg-mobile-dark.jpg')] 
+    md:bg-[url('./assets/images/bg-desktop-light.jpg')] md:dark:bg-[url('./assets/images/bg-desktop-dark.jpg')] ">
 
       <Header />
 
-      <main className="container mx-auto  mt-8 px-4">
+      <main className="container mx-auto  mt-8 px-4 md:max-w-xl">
         <TodoCreate createTodo ={createTodo}/>
              
         <TodoList 
@@ -80,7 +88,7 @@ const App = () =>{
         
       </main>
 
-      <footer className="text-center mt-8 dark:text-gray-400">Drag and drop to reorder list</footer>
+      <footer className="text-center mt-8 dark:text-gray-400 transition-all duration-1000">Drag and drop to reorder list</footer>
 
     </div>
   );
