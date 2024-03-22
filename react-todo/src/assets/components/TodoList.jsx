@@ -3,7 +3,7 @@ import TodoItem from "./TodoItem";
 
 
 
-const TodoList = ({todos, removeTodo, updateTodo, ...props}) => {
+const TodoList = ({todos, removeTodo, updateTodo}) => {
   return(
    <Droppable droppableId="todos">
     {
