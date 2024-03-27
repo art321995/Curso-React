@@ -1,28 +1,39 @@
 import { Routes, Route } from "react-router-dom";
-
-import Login from "./routes/Login";
 import Home from "./routes/Home";
+import Login from "./routes/Login";
 import Navbar from "./components/Navbar";
-import RequireAuth from "./components/RequireAuth";
+import LayoutContainerForm from "./components/LayoutContainerForm";
 import Register from "./routes/Register";
 import { useContext } from "react";
 import { UserContext } from "./context/UserProvider";
-import AccessContainer from "./components/AccessContainer";
+import Layout404 from "./components/Layout404";
+import RequireAuth from "./components/RequireAuth";
+
 
 const App = () => {
   const { user } = useContext(UserContext);
-  if (user === false) return <p>Loading...</p>;
+
+  if (user === false) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <>
-      <div className="container">
-        <Navbar />
-        
-        <Routes>
+      <Navbar />
+      <Routes>
         <Route
           path="/"
-          element={<AccessContainer />}
-          
+          element={<RequireAuth />}
+        >
+          <Route
+            index
+            element={<Home />}
+          />
+        </Route>
+
+        <Route
+          path="/"
+          element={<LayoutContainerForm />}
         >
           <Route
             path="/login"
@@ -33,8 +44,12 @@ const App = () => {
             element={<Register />}
           />
         </Route>
-        </Routes>
-      </div>
+
+        <Route
+          path="*"
+          element={<Layout404 />}
+        />
+      </Routes>
     </>
   );
 };

@@ -26,8 +26,8 @@ const Navbar = () => {
           to="/"
           className="flex items-center"
         >
-          <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-            😍 RedirectAPP
+          <span className=" self-center text-xl font-semibold whitespace-nowrap dark:text-white ">
+            Inicio
           </span>
         </Link>
         <div className="flex md:order-2">
