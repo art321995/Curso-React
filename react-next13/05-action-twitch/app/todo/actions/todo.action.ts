@@ -1,40 +1,42 @@
-"use server";
-
+import { ZodError } from "zod";
+import { todoZodSchema } from "../schema/todo.zod.schema";
 import { prisma } from "@/libs/prismadb";
 import { revalidatePath } from "next/cache";
+import { UserButton } from "@clerk/nextjs";
 
-export const createTodo = async (title: string) => {
-  if (!title || !title.trim()) {
-    return {
-      error: "Title is required (backend)",
-    };
-  }
+interface CreateTodoResponse {
+  success: boolean;
+  message: string;
+}
 
+export const createTodo = async (
+  title: string
+): Promise<CreateTodoResponse> => {
   try {
-    await prisma.todo.create({ data: { title } });
+    todoZodSchema.parse({
+      title,
+    });
+    await prisma.todo.create({
+      data: {
+        title: title.trim(),
+      },
+    });
     revalidatePath("/todo");
     return {
-      success: "Todo created successfully",
+      success: true,
+      message: "Todo created (backend)",
     };
   } catch (error) {
-    return {
-      error: "Something went wrong",
-    };
-  }
-};
+    if (error instanceof ZodError) {
+      return {
+        success: false,
+        message: error.issues[0].message,
+      };
+    }
 
-export const removeItem = async (id: string) => {
-  if (!id || !id.trim()) return { error: "Id is required (backend)" };
-
-  try {
-    await prisma.todo.delete({ where: { id } });
-    revalidatePath("/todo");
     return {
-      success: "Todo deleted successfully",
-    };
-  } catch (error) {
-    return {
-      error: "Something went wrong",
+      success: false,
+      message: "error de servidor (backend)",
     };
   }
 };

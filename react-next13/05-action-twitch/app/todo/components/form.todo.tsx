@@ -15,24 +15,22 @@ const FormTodo = () => {
     const title = data.get("title") as string;
   
     try {
-      todoZodSchema.parse({ title });
+      // se comentó para forzar validaciones en el backend
+      // todoZodSchema.parse({ title });
+      const res = await createTodo(title);
+      if (!res.success) {
+        return toast.error(res.message);
+      }
+      toast.success(res.message);
     } catch (error) {
+      console.log(error);
       if (error instanceof ZodError) {
         return error.issues.map((issue) => toast.error(issue.message));
       }
-    }
-
-    const res = await createTodo(title);
-
-      if (res.error) {
-        return toast.error(res.error);
-      }
-
-      toast.success(res.success as string);
-
+    } finally {
       formRef.current?.reset();
+    }
   };
-  
 
   return (
     <form
