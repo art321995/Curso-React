@@ -1,8 +1,12 @@
-import { ZodError } from "zod";
-import { todoZodSchema } from "../schema/todo.zod.schema";
+"use server";
+
 import { prisma } from "@/libs/prismadb";
 import { revalidatePath } from "next/cache";
-import { UserButton } from "@clerk/nextjs";
+
+import { ZodError } from "zod";
+import { todoZodSchema } from "../schema/todo.zod.schema";
+
+import { auth } from "@clerk/nextjs";
 
 interface CreateTodoResponse {
   success: boolean;
@@ -12,6 +16,14 @@ interface CreateTodoResponse {
 export const createTodo = async (
   title: string
 ): Promise<CreateTodoResponse> => {
+  const { userId }: { userId: string | null } = auth();
+
+  if (!userId)
+    return {
+      success: false,
+      message: "No user id (backend)",
+    };
+
   try {
     todoZodSchema.parse({
       title,
@@ -19,6 +31,7 @@ export const createTodo = async (
     await prisma.todo.create({
       data: {
         title: title.trim(),
+        userId: userId,
       },
     });
     revalidatePath("/todo");
